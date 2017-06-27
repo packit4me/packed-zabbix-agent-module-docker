@@ -25,6 +25,10 @@ RPMBUILD = rpmbuild --define "_topdir %(pwd)/build" \
 
 GET_SDIST = spectool -g -C ${SDISTDIR} ${PACKAGE}.spec
 
+ifneq ($(origin MOCK_REPO), undefined)
+MOCK_REPO_MACRO := -r ${MOCK_REPO}
+endif
+
 all: rpms
 
 clean:
@@ -63,7 +67,7 @@ srpm: prep_rpmbuild
 	${RPMBUILD} -bs ${PACKAGE}.spec
 
 mock: srpm
-	mock ${MOCK_OPTIONS} ${RPMDIR}/${PACKAGE}*.src.rpm
+	mock ${MOCK_OPTIONS} ${MOCK_REPO_MACRO} --cleanup-after --resultdir=${RPMDIR} ${RPMDIR}/${PACKAGE}*.src.rpm
 
 prep_build: sdist
 	mkdir -p ${BUILDDIR}
